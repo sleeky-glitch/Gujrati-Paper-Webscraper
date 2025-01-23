@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 
+
 def translate_to_gujarati(keyword):
     """Translate the input keyword from English to Gujarati using Deep Translator."""
     try:
@@ -11,6 +12,7 @@ def translate_to_gujarati(keyword):
     except Exception as e:
         st.error(f"Translation failed: {e}")
         return keyword
+
 
 def fetch_article_links(base_url, keyword, site_name):
     """Fetch all article links containing the keyword for a specific site."""
@@ -27,19 +29,19 @@ def fetch_article_links(base_url, keyword, site_name):
                     if not href.startswith("http"):
                         href = f"{base_url.rstrip('/')}/{href.lstrip('/')}"
                     links.append(href)
-        elif site_name == "Divya Bhaskar":
+        elif site_name == "Divya Bhaskar" or site_name == "Sandesh":
             for a in soup.find_all('a', href=True):
                 if keyword in a.text:
-                    links.append(a['href'])
-        elif site_name == "Sandesh":
-            for a in soup.find_all('a', href=True):
-                if keyword in a.text:
-                    links.append(a['href'])
+                    href = a['href']
+                    if not href.startswith("http"):
+                        href = f"{base_url.rstrip('/')}/{href.lstrip('/')}"
+                    links.append(href)
 
         return links
     except Exception as e:
         st.error(f"An error occurred while fetching links for {site_name}: {e}")
         return []
+
 
 def extract_article(link, site_name):
     """Extract the date and content from an article based on the site."""
@@ -70,6 +72,7 @@ def extract_article(link, site_name):
         return article_date, article_text if article_text else "No article content found."
     except Exception as e:
         return f"Error extracting article for {site_name}: {e}", ""
+
 
 def main():
     st.set_page_config(page_title="Gujarati News Article Scraper", page_icon="📰")
@@ -105,6 +108,7 @@ def main():
                         st.warning(f"No articles found with the keyword '{keyword}' on {site_name}.")
         else:
             st.error("Please enter a keyword.")
+
 
 if __name__ == "__main__":
     main()
