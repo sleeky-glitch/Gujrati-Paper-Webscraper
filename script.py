@@ -1,19 +1,19 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 def translate_to_gujarati(keyword):
-    """Translate the input keyword from English to Gujarati using googletrans."""
+    """Translate the input keyword from English to Gujarati using Deep Translator."""
     try:
-        translator = Translator()
-        translated = translator.translate(keyword, src='en', dest='gu')
-        return translated.text
+        translated = GoogleTranslator(source='en', target='gu').translate(keyword)
+        return translated
     except Exception as e:
         st.error(f"Translation failed: {e}")
         return keyword
 
 def fetch_article_links(base_url, keyword):
+    """Fetch all article links containing the keyword."""
     try:
         response = requests.get(base_url)
         response.raise_for_status()
@@ -33,6 +33,7 @@ def fetch_article_links(base_url, keyword):
         return []
 
 def extract_article(link):
+    """Extract the date and content from an article."""
     try:
         response = requests.get(link)
         response.raise_for_status()
